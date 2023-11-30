@@ -1,11 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localização</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        #content {
+            text-align: center;
+        }
+
+        #mapholder {
+            height: 250px;
+            width: 500px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #217dbb;
+        }
+    </style>
+</head>
 
 <body>
-    <p id="demo">Clique no botão para receber as coordenadas:</p>
-    <button onclick="getLocation()">Clique Aqui</button>
-    <div id="mapholder"></div>
-    <script src="http://maps.google.com/maps/api/js?key=AIzaSyCwdM3imaSXXe162XCrL0ddhVguBjfcBqE&sensor=false"></script>
+    <div id="content">
+        <p id="demo">Clique no botão para receber as coordenadas:</p>
+        <button onclick="getLocation()">Permitir Localização</button>
+        <div id="mapholder"></div>
+    </div>
+
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyCwdM3imaSXXe162XCrL0ddhVguBjfcBqE&sensor=false">
+    </script>
     <script>
         var x = document.getElementById("demo");
 
@@ -21,20 +67,23 @@
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
             var latlon = new google.maps.LatLng(lat, lon);
-            var mapholder = document.createElement('div');
-            mapholder.id = 'mapholder';
-            document.body.appendChild(mapholder);
-            mapholder.style.height = '250px';
-            mapholder.style.width = '500px';
-
+            var mapholder = document.getElementById('mapholder');
+            mapholder.style.display = 'block';
             var myOptions = {
-                center: latlon, zoom: 14,
+                center: latlon,
+                zoom: 14,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 mapTypeControl: false,
-                navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL }
+                navigationControlOptions: {
+                    style: google.maps.NavigationControlStyle.SMALL
+                }
             };
-            var map = new google.maps.Map(document.getElementById("mapholder"), myOptions);
-            var marker = new google.maps.Marker({ position: latlon, map: map, title: "Você está Aqui!" });
+            var map = new google.maps.Map(mapholder, myOptions);
+            var marker = new google.maps.Marker({
+                position: latlon,
+                map: map,
+                title: "Você está Aqui!"
+            });
             getAddress(lat, lon);
         }
 
@@ -59,17 +108,19 @@
             var geocoder = new google.maps.Geocoder();
             var latlng = new google.maps.LatLng(latitude, longitude);
 
-            geocoder.geocode({ 'latLng': latlng }, function (results, status) {
+            geocoder.geocode({
+                'latLng': latlng
+            }, function (results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
                     if (results[0]) {
-                        x.innerHTML += "<br>Latitude: " + latitude.toFixed(6) +
-                            "<br>Longitude: " + longitude.toFixed(6) +
-                            "<br>Endereço: " + results[0].formatted_address;
+                        alert("Latitude: " + latitude.toFixed(6) +
+                            "\nLongitude: " + longitude.toFixed(6) +
+                            "\nEndereço: " + results[0].formatted_address);
                     } else {
-                        x.innerHTML += "<br>Endereço não encontrado";
+                        alert("Endereço não encontrado");
                     }
                 } else {
-                    x.innerHTML += "<br>Falha na geocodificação reversa: " + status;
+                    alert("Falha na geocodificação reversa: " + status);
                 }
             });
         }
